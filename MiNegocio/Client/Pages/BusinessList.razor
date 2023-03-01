@@ -1,0 +1,113 @@
+﻿@page "/business"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MiNegocio.Shared
+@using MiNegocio.Client.Component.Business
+@using Service
+@attribute [Authorize]
+@inject HttpClient Http
+@inject BusinessService businessesService
+@inject DialogService DialogService
+@implements IDisposable
+<PageTitle>Business</PageTitle>
+
+<h2>My Business</h2>
+
+@if (businesses == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenRow>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="New Business" Icon="add_circle_outline" Click="ShowInlineDialog"></RadzenButton>
+    </RadzenRow>
+    <RadzenRow >
+        @foreach (var bus in businesses)
+        {
+           <BusinessCard business="bus" DeleteBusiness="() => DeleteBusiness(bus)"></BusinessCard>
+        }
+    </RadzenRow>
+}
+
+@code {
+    private Business[]? businesses;
+
+    Business newBusiness = new Business();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+        try
+        {            
+            businesses = await businessesService.GetBusinessAsync();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+        Console.WriteLine("Dialog opened");
+    }
+
+    void Close(dynamic result)
+    {
+        Console.WriteLine($"Dialog closed");
+    }
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService.OpenAsync("New Business", ds =>
+    @<div>
+        <div class="row">
+            <div class="col">
+                <RadzenTemplateForm TItem="Business" Data=@newBusiness Submit="(e => { NewBusiness(newBusiness, ds);})">
+                    <RadzenFieldset Text="Business information">
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Business Name</RadzenText>
+                        <RadzenTextBox Name="Name" @bind-Value=@newBusiness.Name Placeholder="Name" class="w-100 mb-2" />
+                        <RadzenRequiredValidator Component="Name" Text="First name is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
+                    
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Description</RadzenText>
+                        <RadzenTextArea Name="Description" @bind-Value=@newBusiness.Description Placeholder="Enter description here..." class="w-100 mb-2" />
+                        <RadzenRequiredValidator Component="Description" Text="First name is required" Popup=true Style="position: relative; margin-bottom: 1rem"/>
+
+                        <hr>
+                        <RadzenButton ButtonType="ButtonType.Submit" Text="Ok" class="me-1" Style="width: 80px;" />
+                        <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Light" class="me-1" />
+                    </RadzenFieldset>
+                </RadzenTemplateForm>                
+            </div>
+        </div>
+        </div>
+    );
+        Console.WriteLine($"Dialog result: {result}");
+    }
+
+    private async void NewBusiness(Business args, DialogService ds)
+    {        
+        var result = await businessesService.AddBusiness(args);
+        businesses = await businessesService.GetBusinessAsync();
+        ds.Close();
+        StateHasChanged();
+    }
+
+    private async void DeleteBusiness(Business bus)
+    {
+        var result = await businessesService.DeleteBusiness(bus);
+        if (result)
+        {
+            businesses = await businessesService.GetBusinessAsync();        
+            StateHasChanged();            
+        }
+    }
+}

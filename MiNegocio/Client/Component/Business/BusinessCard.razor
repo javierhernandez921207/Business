@@ -1,0 +1,40 @@
+﻿@inject DialogService DialogService
+<RadzenColumn Size="12" SizeXS="6" SizeSM="4">
+    <RadzenCard Class="rz-my-3 rz-shadow-3">
+        <h3>@business?.Name</h3>
+        <h5>Products:@business?.Products?.Count</h5>
+        <hr>
+        <RadzenSplitButton Click=@(args => OnClickBtnBusiness(args)) Text="Show">
+            <ChildContent>
+                <RadzenSplitButtonItem Text="Edit" Value="1" Icon="code" />
+                <RadzenSplitButtonItem Text="Delete" Value="2" Icon="delete_forever" />
+            </ChildContent>
+        </RadzenSplitButton>
+    </RadzenCard>
+</RadzenColumn>
+
+@code {
+    [Parameter]
+    public Business business { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<bool> DeleteBusiness { get; set; }
+
+    public async void OnClickBtnBusiness(RadzenSplitButtonItem item)
+    {
+
+        if (item?.Value == "2" )
+        {
+            var result = await DialogService.Confirm($"Are you sure, that do you want delete busines {business?.Name}?", "Delete Business", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+            if (result == true)
+                await DeleteBusiness.InvokeAsync(true);
+        }
+        else
+        {
+            Console.WriteLine($"btn clicked");
+        }
+    }
+
+   
+
+}
