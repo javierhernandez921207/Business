@@ -25,7 +25,7 @@ namespace MiNegocio.Client.Service
             var result = await _httpClient.PostAsJsonAsync("api/Businesses", business);
             if (result.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Detail = "Business Deleted", Duration = 4000 });
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Detail = "Business Add", Duration = 4000 });
                 return true;
             }
             else
@@ -37,10 +37,10 @@ namespace MiNegocio.Client.Service
 
         public async Task<bool> EditBusiness(Business business)
         {
-            var result = await _httpClient.PutAsJsonAsync("api/Businesses", business);
-            if (result.StatusCode == System.Net.HttpStatusCode.Created)
+            var result = await _httpClient.PutAsJsonAsync($"api/Businesses/{business.Id}", business);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Detail = "Business Deleted", Duration = 4000 });
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Detail = "Business updated", Duration = 4000 });
                 return true;
             }
             else

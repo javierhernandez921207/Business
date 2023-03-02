@@ -86,7 +86,7 @@ else
         @<div>
             <div class="row">
                 <div class="col">
-                    <BusinessForm business="b" OnSubmit="() => ds.Close()" OnCancel="() => ds.Close()"></BusinessForm>
+                    <BusinessForm business="b" OnSubmit="() => {ds.Close(); EditBusiness(b);}" OnCancel="() => ds.Close()"></BusinessForm>
                 </div>
             </div>
         </div>
@@ -99,6 +99,13 @@ else
         newBusiness = new();
         businesses = await businessesService.GetBusinessAsync();
         ds.Close();
+        StateHasChanged();
+    }
+
+    private async void EditBusiness(Business args)
+    {
+        var result = await businessesService.EditBusiness(args);        
+        businesses = await businessesService.GetBusinessAsync();        
         StateHasChanged();
     }
 
