@@ -18,7 +18,10 @@
     public Business business { get; set; } = new();
 
     [Parameter]
-    public EventCallback<bool> DeleteBusiness { get; set; }
+    public EventCallback DeleteBusiness { get; set; }
+
+    [Parameter]
+    public EventCallback EditBusiness { get; set; }
 
     public async void OnClickBtnBusiness(RadzenSplitButtonItem item)
     {
@@ -27,11 +30,11 @@
         {
             var result = await DialogService.Confirm($"Are you sure, that do you want delete busines {business?.Name}?", "Delete Business", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
             if (result == true)
-                await DeleteBusiness.InvokeAsync(true);
+                await DeleteBusiness.InvokeAsync();
         }
         else
         {
-            Console.WriteLine($"btn clicked");
+            await EditBusiness.InvokeAsync();
         }
     }
 

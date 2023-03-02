@@ -81,7 +81,7 @@ namespace MiNegocio.Server.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Businesses

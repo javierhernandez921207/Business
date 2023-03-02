@@ -35,6 +35,21 @@ namespace MiNegocio.Client.Service
             }
         }
 
+        public async Task<bool> EditBusiness(Business business)
+        {
+            var result = await _httpClient.PutAsJsonAsync("api/Businesses", business);
+            if (result.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Detail = "Business Deleted", Duration = 4000 });
+                return true;
+            }
+            else
+            {
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = result.StatusCode.ToString(), Duration = 4000 });
+                return false;
+            }
+        }
+
         public async Task<bool> DeleteBusiness(Business business)
         {            
             var result = await _httpClient.DeleteAsync($"api/Businesses/{business.Id}");

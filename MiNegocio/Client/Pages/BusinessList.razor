@@ -20,12 +20,12 @@
 else
 {
     <RadzenRow>
-        <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="New Business" Icon="add_circle_outline" Click="ShowInlineDialog"></RadzenButton>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="New Business" Icon="add_circle_outline" Click="ShowDialogNewBusiness"></RadzenButton>
     </RadzenRow>
     <RadzenRow >
         @foreach (var bus in businesses)
         {
-           <BusinessCard business="bus" DeleteBusiness="() => DeleteBusiness(bus)"></BusinessCard>
+           <BusinessCard business="bus" DeleteBusiness="() => DeleteBusiness(bus)" EditBusiness="() => ShowDialogEditBusiness(bus)"></BusinessCard>
         }
     </RadzenRow>
 }
@@ -65,27 +65,14 @@ else
     {
         Console.WriteLine($"Dialog closed");
     }
-    async Task ShowInlineDialog()
+
+    private async Task ShowDialogNewBusiness()
     {
         var result = await DialogService.OpenAsync("New Business", ds =>
     @<div>
         <div class="row">
             <div class="col">
-                <RadzenTemplateForm TItem="Business" Data=@newBusiness Submit="(e => { NewBusiness(newBusiness, ds);})">
-                    <RadzenFieldset Text="Business information">
-                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Business Name</RadzenText>
-                        <RadzenTextBox Name="Name" @bind-Value=@newBusiness.Name Placeholder="Name" class="w-100 mb-2" />
-                        <RadzenRequiredValidator Component="Name" Text="First name is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
-                    
-                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Description</RadzenText>
-                        <RadzenTextArea Name="Description" @bind-Value=@newBusiness.Description Placeholder="Enter description here..." class="w-100 mb-2" />
-                        <RadzenRequiredValidator Component="Description" Text="First name is required" Popup=true Style="position: relative; margin-bottom: 1rem"/>
-
-                        <hr>
-                        <RadzenButton ButtonType="ButtonType.Submit" Text="Ok" class="me-1" Style="width: 80px;" />
-                        <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Light" class="me-1" />
-                    </RadzenFieldset>
-                </RadzenTemplateForm>                
+                <BusinessForm business="newBusiness" OnSubmit="() => NewBusiness(newBusiness, ds)" OnCancel="() => ds.Close()"></BusinessForm>                
             </div>
         </div>
         </div>
@@ -93,9 +80,23 @@ else
         Console.WriteLine($"Dialog result: {result}");
     }
 
+    private async Task ShowDialogEditBusiness(Business b)
+    {
+        var result = await DialogService.OpenAsync("Edit Business", ds =>
+        @<div>
+            <div class="row">
+                <div class="col">
+                    <BusinessForm business="b" OnSubmit="() => ds.Close()" OnCancel="() => ds.Close()"></BusinessForm>
+                </div>
+            </div>
+        </div>
+        );
+    }
+
     private async void NewBusiness(Business args, DialogService ds)
     {        
         var result = await businessesService.AddBusiness(args);
+        newBusiness = new();
         businesses = await businessesService.GetBusinessAsync();
         ds.Close();
         StateHasChanged();
