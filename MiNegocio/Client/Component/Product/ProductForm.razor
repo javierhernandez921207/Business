@@ -1,0 +1,39 @@
+﻿<RadzenTemplateForm TItem="Product" Data=@Product Submit="() => OnSubmit.InvokeAsync()">
+    <RadzenFieldset Text="Product information">
+
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Product Name</RadzenText>
+        <RadzenTextBox Name="Name" @bind-Value=@Product.Name Placeholder="Name" class="w-100 mb-2" />
+        <RadzenRequiredValidator Component="Name" Text="Product name is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
+
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Cost</RadzenText>
+        <RadzenNumeric Name="Cost" @bind-Value=@Product.Cost Placeholder="Product Cost..." class="w-100 mb-2" />
+        <RadzenRequiredValidator Component="Cost" Text="Cost value is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
+
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Price</RadzenText>
+        <RadzenNumeric Name="Cost" @bind-Value=@Product.Price Placeholder="Product Price..." class="w-100 mb-2" />
+        <RadzenRequiredValidator Component="Price" Text="Price value is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
+
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Amount</RadzenText>
+        <RadzenNumeric Name="Cost" @bind-Value=@Product.Amount Placeholder="Product Amount..." class="w-100 mb-2" />
+        <RadzenRequiredValidator Component="Price" Text="Amount value is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
+
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Amount End</RadzenText>
+        <RadzenNumeric Name="Cost" @bind-Value=@Product.AmountC Placeholder="Product Amount End..." class="w-100 mb-2" />
+        <RadzenRequiredValidator Component="Price" Text="Price value is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
+
+        <hr>
+        <RadzenButton ButtonType="ButtonType.Submit" Text="Ok" class="me-1" Style="width: 80px;" />
+        <RadzenButton Text="Cancel" Click="() => OnCancel.InvokeAsync()" ButtonStyle="ButtonStyle.Light" class="me-1" />
+    </RadzenFieldset>
+</RadzenTemplateForm>
+@code {
+    [Parameter]
+    public Product Product { get; set; } = new();
+
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+}

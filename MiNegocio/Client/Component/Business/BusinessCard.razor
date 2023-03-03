@@ -1,4 +1,5 @@
 ﻿@inject DialogService DialogService
+@inject NavigationManager Navigation
 <RadzenColumn Size="12" SizeXS="6" SizeSM="4">
     <RadzenCard Class="rz-my-3 rz-shadow-3">
         <h3>@business?.Name</h3>
@@ -26,15 +27,19 @@
     public async void OnClickBtnBusiness(RadzenSplitButtonItem item)
     {
 
-        if (item?.Value == "2" )
+        if (item?.Value == "2")
         {
             var result = await DialogService.Confirm($"Are you sure, that do you want delete busines {business?.Name}?", "Delete Business", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
             if (result == true)
                 await DeleteBusiness.InvokeAsync();
         }
-        else
+        else if (item?.Value == "1")
         {
             await EditBusiness.InvokeAsync();
+        }
+        else
+        {
+            Navigation.NavigateTo($"/business/{business.Id}");
         }
     }
 

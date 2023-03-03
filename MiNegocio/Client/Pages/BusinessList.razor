@@ -11,7 +11,14 @@
 @implements IDisposable
 <PageTitle>Business</PageTitle>
 
-<h2>My Business</h2>
+<RadzenRow>
+    <RadzenBreadCrumb>
+        <RadzenBreadCrumbItem Text="Business" />
+    </RadzenBreadCrumb>
+</RadzenRow>
+<hr />
+
+<h3>My Business</h3>
 
 @if (businesses == null)
 {
@@ -61,9 +68,11 @@ else
         Console.WriteLine("Dialog opened");
     }
 
-    void Close(dynamic result)
+    async void Close(dynamic result)
     {
+        businesses = await businessesService.GetBusinessAsync();
         Console.WriteLine($"Dialog closed");
+        StateHasChanged();
     }
 
     private async Task ShowDialogNewBusiness()

@@ -1,0 +1,89 @@
+﻿@page "/business/{id}"
+@using Service
+@using MiNegocio.Client.Component.Product
+@inject BusinessService businessesService
+@inject DialogService DialogService
+<PageTitle>Business @business?.Name</PageTitle>
+
+<RadzenRow>
+    <RadzenBreadCrumb>
+        <RadzenBreadCrumbItem Path="/business" Text="Business" />
+        <RadzenBreadCrumbItem Text="@business?.Name" />
+    </RadzenBreadCrumb>
+</RadzenRow>
+<hr />
+
+@if (business == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h3>Business @business?.Name </h3>
+    <RadzenRow>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="New Product" Icon="add_circle_outline" Click="ShowDialogNewProduct"></RadzenButton>
+    </RadzenRow>
+    <RadzenRow>
+        <RadzenCard Class="rz-my-3 rz-shadow-2">
+            <RadzenDataGrid PageSize="5" AllowMultiColumnSorting="true" ShowMultiColumnSortingIndex="true" AllowPaging="true" AllowSorting="true" Data="@business?.Products" TItem="Product" ColumnWidth="400px">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Product" Property="Name" Title="Name" Width="20%" />
+                    <RadzenDataGridColumn TItem="Product" Property="Cost" Title="Cost" FormatString="{0:d}" Width="20%" />
+                    <RadzenDataGridColumn TItem="Product" Property="Price" Title="Price" FormatString="{0:d}" Width="20%" />
+                    <RadzenDataGridColumn TItem="Product" Property="Amount" Title="Amount" Width="20%" />
+                    <RadzenDataGridColumn TItem="Product" Property="AmountC" Title="AmountC" Width="20%" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenCard>
+    </RadzenRow>
+
+}
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    public Business? business { get; set; }
+
+    private Product newProduct = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+        business = await businessesService.GetBusinessByIdAsync(Guid.Parse(id));
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+        Console.WriteLine("Dialog opened");
+    }
+
+    void Close(dynamic result)
+    {        
+        Console.WriteLine($"Dialog closed");
+        StateHasChanged();
+    }
+
+    private async Task ShowDialogNewProduct()
+    {
+        var result = await DialogService.OpenAsync("New Product", ds =>
+        @<div>
+            <div class="row">
+                <div class="col">
+                    <ProductForm Product="newProduct"></ProductForm>
+                </div>
+            </div>
+            </div>
+        );
+            Console.WriteLine($"Dialog result: {result}");
+    }
+
+}

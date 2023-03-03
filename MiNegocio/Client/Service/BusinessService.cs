@@ -21,6 +21,11 @@ namespace MiNegocio.Client.Service
             return await _httpClient.GetFromJsonAsync<Business[]>("api/Businesses");
         }
 
+        public async Task<Business?> GetBusinessByIdAsync(Guid id)
+        {
+            return await _httpClient.GetFromJsonAsync<Business?>($"api/Businesses/{id}");
+        }
+
         public async Task<bool> AddBusiness(Business business) {
             var result = await _httpClient.PostAsJsonAsync("api/Businesses", business);
             if (result.StatusCode == System.Net.HttpStatusCode.Created)
