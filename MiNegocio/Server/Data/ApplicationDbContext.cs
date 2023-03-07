@@ -16,5 +16,6 @@ namespace MiNegocio.Server.Data
         }
         public DbSet<Business> Businesss { get; set; }
         public DbSet<Product> Products { get; set; }
+
     }
 }

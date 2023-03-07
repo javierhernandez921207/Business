@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +33,9 @@ namespace MiNegocio.Server.Controllers
           {
               return NotFound();
           }
-            return await _context.Businesss.ToListAsync();
+            return await _context.Businesss
+                .Include(b => b.Products)
+                .ToListAsync();
         }
 
         // GET: api/Businesses/5
@@ -43,8 +46,10 @@ namespace MiNegocio.Server.Controllers
           {
               return NotFound();
           }
-            var business = await _context.Businesss.FindAsync(id);
-
+            var business = await _context.Businesss
+                .Include(b => b.Products)
+                .FirstOrDefaultAsync(b => b.Id == id);
+           
             if (business == null)
             {
                 return NotFound();
@@ -93,6 +98,7 @@ namespace MiNegocio.Server.Controllers
           {
               return Problem("Entity set 'ApplicationDbContext.Businesss'  is null.");
           }
+            business.Products = new List<Product>();
             _context.Businesss.Add(business);
             await _context.SaveChangesAsync();
 

@@ -25,5 +25,6 @@ builder.Services.AddScoped<ContextMenuService>();
 
 //My Services
 builder.Services.AddScoped<BusinessService>();
+builder.Services.AddScoped<ProductService>();
 
 await builder.Build().RunAsync();
