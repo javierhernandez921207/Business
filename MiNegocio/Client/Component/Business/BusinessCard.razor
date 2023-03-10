@@ -3,7 +3,10 @@
 <RadzenColumn Size="12" SizeXS="6" SizeSM="4">
     <RadzenCard Class="rz-my-3 rz-shadow-3">
         <h3>@business?.Name</h3>
-        <h5>Products:@business?.Products?.Count</h5>
+        <h5>Products: @business?.Products?.Count</h5>
+        <h6>Total Cost: @business?.TotalCost()</h6>
+        <h6>Total Sale: @business?.TotalSale()</h6>
+        <h6>Total Revenue: @business?.TotalRevenue()</h6>
         <hr>
         <RadzenSplitButton Click=@(args => OnClickBtnBusiness(args)) Text="Show">
             <ChildContent>

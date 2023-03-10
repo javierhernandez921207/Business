@@ -24,25 +24,29 @@ else
     <RadzenRow>
         <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="New Product" Icon="add_circle_outline" Click="ShowDialogNewProduct"></RadzenButton>
     </RadzenRow>
+
     <RadzenRow>
-        <RadzenCard Class="rz-my-3 rz-shadow-2">
-            <RadzenDataGrid Data="@business?.Products" TItem="Product" AllowFiltering="true" AllowColumnResize="true" Responsive="true" FilterMode="FilterMode.SimpleWithMenu" PageSize="5" AllowPaging="true" AllowSorting="true" ColumnWidth="auto">
-                <Columns>
-                    <RadzenDataGridColumn TItem="Product" Property="Name" Title="Name" Frozen="true" />
-                    <RadzenDataGridColumn TItem="Product" Property="Cost" Title="Cost" FormatString="{0:C2}" />
-                    <RadzenDataGridColumn TItem="Product" Property="Price" Title="Price" FormatString="{0:C2}" />
-                    <RadzenDataGridColumn TItem="Product" Property="Amount" Title="Amount" />
-                    <RadzenDataGridColumn TItem="Product" Property="AmountC" Title="AmountC" />
-                    <RadzenDataGridColumn TItem="Product" Title="Actions">
-                        <Template Context="data">
-                            <RadzenButton ButtonStyle="ButtonStyle.Primary" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="code" Click="() => ShowDialogEditProduct(data)" />
-                            <RadzenButton ButtonStyle="ButtonStyle.Primary" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="input" />
-                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="delete_forever" />
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
-        </RadzenCard>
+        <div class="col-12">
+            <RadzenCard Class="rz-my-3 rz-shadow-2">
+                <RadzenDataGrid class="content" Data="@business?.Products" TItem="Product" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.SimpleWithMenu" PageSize="5" AllowPaging="true" AllowSorting="true" ColumnWidth="200px">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Product" Property="Name" Title="Name" Frozen="true" />
+                        <RadzenDataGridColumn TItem="Product" Property="Cost" Title="Cost" FormatString="{0:C2}" />
+                        <RadzenDataGridColumn TItem="Product" Property="Price" Title="Price" FormatString="{0:C2}" />
+                        <RadzenDataGridColumn TItem="Product" Property="Amount" Title="Amount" />
+                        <RadzenDataGridColumn TItem="Product" Property="AmountC" Title="AmountC" />
+                        <RadzenDataGridColumn TItem="Product" Title="Actions">
+                            <Template Context="data">
+                                <RadzenButton ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="input" Click="() => ShowDialogProductInput(data)" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="output" Click="() => ShowDialogProductInput(data)" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Primary" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="edit" Click="() => ShowDialogEditProduct(data)" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="delete_forever" Click="() => ShowDialogDeleteProduct(data)" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenCard>
+        </div>
     </RadzenRow>    
 
 }
@@ -87,7 +91,7 @@ else
         @<div>
             <div class="row">
                 <div class="col">
-                <ProductForm Product="newProduct" OnSubmit="()=>AddProduct(ds)" OnCancel="()=>Console.WriteLine(0)"></ProductForm>
+                <ProductForm Product="newProduct" OnSubmit="()=>AddProduct()" OnCancel="()=>Cancel()"></ProductForm>
                 </div>
             </div>
         </div>
@@ -102,28 +106,74 @@ else
     @<div>
         <div class="row">
             <div class="col">
-                <ProductForm Product="product" OnSubmit="()=>EditProduct(ds, product)" OnCancel="()=>Console.WriteLine(0)"></ProductForm>
+                <ProductForm Product="product" OnSubmit="()=>EditProduct(product)" OnCancel="()=>Cancel()"></ProductForm>
             </div>
         </div>
-    </div>
+        </div>
     );
         Console.WriteLine($"Dialog result: {result}");
     }
 
-    private async Task AddProduct(DialogService dialogService)
+    private async Task ShowDialogProductInput(Product product)
+    {
+        ProductInput productInput = new();
+        var result = await DialogService.OpenAsync("Product Input", ds =>
+    @<div>
+        <div class="row">
+            <div class="col">
+                <ProductFormInput Product="productInput" OnSubmit="() => InputProduct(product, productInput) " OnCancel="()=>Cancel()"></ProductFormInput>
+            </div>
+        </div>
+    </div>
+    );
+    }
+
+    private async Task ShowDialogDeleteProduct(Product product)
+    {
+        var result = await DialogService.Confirm($"Are you sure, that do you want delete product {product.Name}?", "Delete Product", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (result == true)
+            await DeleteProduct(product);
+
+        DialogService.Close();
+    }
+
+    private async Task AddProduct()
     {        
         var result = await productService.AddProduct(newProduct);
         business = await businessesService.GetBusinessByIdAsync(Guid.Parse(id));
-        dialogService.Close();
+        DialogService.Close();
         newProduct = new();
         StateHasChanged();
     }
 
-    private async Task EditProduct(DialogService dialogService, Product product)
+    private async Task EditProduct(Product product)
     {
         var result = await productService.EditProduct(product);
         business = await businessesService.GetBusinessByIdAsync(Guid.Parse(id));
-        dialogService.Close();        
+        DialogService.Close();        
+        StateHasChanged();
+    }
+
+    private async Task InputProduct(Product product, ProductInput productInput)
+    {
+        var result = await productService.InputProduct(product.Id, productInput);
+        business = await businessesService.GetBusinessByIdAsync(Guid.Parse(id));
+        DialogService.Close();
+        StateHasChanged();
+    }
+
+    private async Task DeleteProduct(Product product)
+    {
+        var result = await productService.DeleteProduct(product);
+        business = await businessesService.GetBusinessByIdAsync(Guid.Parse(id));
+        StateHasChanged();
+    }
+
+    private async Task Cancel()
+    {        
+        business = await businessesService.GetBusinessByIdAsync(Guid.Parse(id));
+        newProduct = new();
+        DialogService.Close();
         StateHasChanged();
     }
 

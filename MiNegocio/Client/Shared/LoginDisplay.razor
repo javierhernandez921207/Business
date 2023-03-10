@@ -1,11 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager Navigation
-
-<AuthorizeView>
+<AuthorizeView >
     <Authorized>
-        <a href="authentication/profile">Hello, @context.User.Identity?.Name!</a>
-        <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button>
+        <RadzenMenu Style="float:right; margin-left:auto;">
+            <RadzenMenuItem Text="@context.User.Identity?.Name">
+                <RadzenMenuItem Click="BeginLogOut" Text="Log out" Icon="exit_to_app"></RadzenMenuItem>
+            </RadzenMenuItem>
+        </RadzenMenu>
     </Authorized>
     <NotAuthorized>
         <a href="authentication/register">Register</a>

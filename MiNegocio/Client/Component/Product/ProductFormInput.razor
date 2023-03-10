@@ -1,0 +1,23 @@
+﻿<RadzenTemplateForm TItem="ProductInput" Data=@Product Submit="() => OnSubmit.InvokeAsync()">
+    <RadzenFieldset Text="Product input">        
+        
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Amount</RadzenText>
+        <RadzenNumeric Name="Amount" @bind-Value=@Product.Amount Placeholder="Amount..." class="w-100 mb-2" />
+        <RadzenRequiredValidator Component="Amount" Text="Amount value is required" Popup=true Style="position: relative; margin-bottom: 1rem" />
+
+        <hr>
+        <RadzenButton ButtonType="ButtonType.Submit" Text="Ok" class="me-1" Style="width: 80px;" />
+        <RadzenButton Text="Cancel" Click="() => OnCancel.InvokeAsync()" ButtonStyle="ButtonStyle.Light" class="me-1" />
+    </RadzenFieldset>
+</RadzenTemplateForm>
+@code {
+    [Parameter]
+    public ProductInput Product { get; set; } = new();
+
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+}

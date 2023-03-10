@@ -1,4 +1,5 @@
 ﻿using MiNegocio.Shared.Models;
+using MiNegocio.Shared.Request;
 using Radzen;
 using System.Net.Http.Json;
 
@@ -45,10 +46,25 @@ namespace MiNegocio.Client.Service
             }
         }
 
+        public async Task<bool> InputProduct(Guid id, ProductInput productInput)
+        {
+            var result = await _httpClient.PutAsJsonAsync($"api/Products/input/{id}", productInput);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Detail = "Producto editado", Duration = 4000 });
+                return true;
+            }
+            else
+            {
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = result.StatusCode.ToString(), Duration = 4000 });
+                return false;
+            }
+        }
+
         public async Task<bool> DeleteProduct(Product product)
         {
             var result = await _httpClient.DeleteAsync($"api/Products/{product.Id}");
-            if (result.StatusCode == System.Net.HttpStatusCode.Created)
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Detail = "Product Eliminado", Duration = 4000 });
                 return true;

@@ -68,9 +68,8 @@ else
         Console.WriteLine("Dialog opened");
     }
 
-    async void Close(dynamic result)
-    {
-        businesses = await businessesService.GetBusinessAsync();
+    void Close(dynamic result)
+    {        
         Console.WriteLine($"Dialog closed");
         StateHasChanged();
     }
@@ -82,7 +81,7 @@ else
     @<div>
         <div class="row">
             <div class="col">
-                <BusinessForm business="newBusiness" OnSubmit="() => NewBusiness(newBusiness, ds)" OnCancel="() => ds.Close()"></BusinessForm>                
+                <BusinessForm business="newBusiness" OnSubmit="() => NewBusiness(newBusiness)" OnCancel="() => ds.Close()"></BusinessForm>                
             </div>
         </div>
         </div>
@@ -103,25 +102,25 @@ else
         );
     }
 
-    private async void NewBusiness(Business args, DialogService ds)
+    private async void NewBusiness(Business business)
     {        
-        var result = await businessesService.AddBusiness(args);
+        var result = await businessesService.AddBusiness(business);
         newBusiness = new();
         businesses = await businessesService.GetBusinessAsync();
-        ds.Close();
+        DialogService.Close();
         StateHasChanged();
     }
 
-    private async void EditBusiness(Business args)
+    private async void EditBusiness(Business business)
     {
-        var result = await businessesService.EditBusiness(args);        
+        var result = await businessesService.EditBusiness(business);
         businesses = await businessesService.GetBusinessAsync();        
         StateHasChanged();
     }
 
-    private async void DeleteBusiness(Business bus)
+    private async void DeleteBusiness(Business business)
     {
-        var result = await businessesService.DeleteBusiness(bus);
+        var result = await businessesService.DeleteBusiness(business);
         if (result)
         {
             businesses = await businessesService.GetBusinessAsync();        
