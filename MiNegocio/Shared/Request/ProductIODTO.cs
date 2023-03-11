@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiNegocio.Shared.Request
 {
-    public class ProductInput
+    public class ProductIODTO
     {
         public int Amount {  get; set; }
     }

@@ -39,8 +39,12 @@ else
                             <Template Context="data">
                                 <RadzenButton ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="input" Click="() => ShowDialogProductInput(data)" />
                                 <RadzenButton ButtonStyle="ButtonStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="output" Click="() => ShowDialogProductInput(data)" />
-                                <RadzenButton ButtonStyle="ButtonStyle.Primary" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="edit" Click="() => ShowDialogEditProduct(data)" />
-                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="delete_forever" Click="() => ShowDialogDeleteProduct(data)" />
+                                <RadzenSplitButton ButtonStyle="ButtonStyle.Primary" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="visibility" Click="(item) => CrudProduct(item, data)">
+                                    <ChildContent>
+                                        <RadzenSplitButtonItem Text="Edit" Value="1" Icon="code" />
+                                        <RadzenSplitButtonItem Text="Delete" Value="2" Icon="delete_forever"/>
+                                    </ChildContent>
+                                </RadzenSplitButton>                                    
                             </Template>
                         </RadzenDataGridColumn>
                     </Columns>
@@ -116,7 +120,7 @@ else
 
     private async Task ShowDialogProductInput(Product product)
     {
-        ProductInput productInput = new();
+        ProductInput productInput = new() { Date = DateTime.Now, Product = product };
         var result = await DialogService.OpenAsync("Product Input", ds =>
     @<div>
         <div class="row">
@@ -124,7 +128,7 @@ else
                 <ProductFormInput Product="productInput" OnSubmit="() => InputProduct(product, productInput) " OnCancel="()=>Cancel()"></ProductFormInput>
             </div>
         </div>
-    </div>
+        </div>
     );
     }
 
@@ -135,6 +139,34 @@ else
             await DeleteProduct(product);
 
         DialogService.Close();
+    }
+
+    private async Task ShowDialogViewProduct(Product product)
+    {
+        await DialogService.OpenAsync("Product View", ds =>
+    @<div>
+        <div class="row">
+            <div class="col">
+                <ProductView ProductId="product.Id" ></ProductView>
+            </div>
+        </div>
+        </div>
+    );
+
+    }
+
+    private async void CrudProduct(RadzenSplitButtonItem item, Product product)
+    {
+        if (item?.Value == "1")
+        {
+            await ShowDialogEditProduct(product);
+        }
+        else if (item?.Value == "2")
+        {
+            await ShowDialogDeleteProduct(product);
+        }
+        else
+            await ShowDialogViewProduct(product);
     }
 
     private async Task AddProduct()
@@ -176,7 +208,4 @@ else
         DialogService.Close();
         StateHasChanged();
     }
-
-
-
 }

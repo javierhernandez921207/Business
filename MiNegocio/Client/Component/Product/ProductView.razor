@@ -1,0 +1,51 @@
+﻿@using MiNegocio.Client.Service;
+@inject ProductService productService
+<RadzenFieldset Text="Product information">
+
+    <div class="row">
+        <div class="col-12">
+            <p>Name: @product?.Name</p>
+        </div>       
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p>Cost: @product?.Cost.ToString("C2")</p>
+        </div>
+        <div class="col-6">
+            <p>Price: @product?.Price.ToString("C2")</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p>Amount: @product?.Amount</p>
+        </div>
+        <div class="col-6">
+            <p>AmountC: @product?.AmountC</p>
+        </div>
+    </div> 
+</RadzenFieldset>
+<RadzenFieldset Text="Product Imputs">
+    <RadzenDataGrid Data="product?.Inputs" TItem="ProductInput" AllowFiltering="true" FilterMode="FilterMode.SimpleWithMenu" PageSize="5" AllowPaging="true" AllowSorting="true" ColumnWidth="auto">
+        <Columns>
+            <RadzenDataGridColumn TItem="ProductInput" Property="Date" Title="Date" />
+            <RadzenDataGridColumn TItem="ProductInput" Property="Amount" Title="Amount" />
+        </Columns>
+    </RadzenDataGrid>
+</RadzenFieldset>
+
+@code {
+    [Parameter]
+    public Guid ProductId { get; set; }
+
+    public Product? product;
+
+    protected async override Task OnInitializedAsync()
+    {        
+        Product? result = await productService.GetProduct(ProductId);
+        if (result != null)
+            product = result;
+
+        StateHasChanged();
+    }
+
+}

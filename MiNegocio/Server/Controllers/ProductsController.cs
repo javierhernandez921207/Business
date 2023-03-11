@@ -22,26 +22,28 @@ namespace MiNegocio.Server.Controllers
             _context = context;
         }
 
-        // GET: api/Products
+        // GET: api/Product
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-          if (_context.Products == null)
+          if (_context.Product == null)
           {
               return NotFound();
           }
-            return await _context.Products.ToListAsync();
+            return await _context.Product.ToListAsync();
         }
 
-        // GET: api/Products/5
+        // GET: api/Product/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(Guid id)
         {
-          if (_context.Products == null)
+          if (_context.Product == null)
           {
               return NotFound();
           }
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Product
+                .Include(p => p.Inputs)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null)
             {
@@ -51,7 +53,7 @@ namespace MiNegocio.Server.Controllers
             return product;
         }
 
-        // PUT: api/Products/5
+        // PUT: api/Product/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(Guid id, Product product)
@@ -82,37 +84,37 @@ namespace MiNegocio.Server.Controllers
             return Ok();
         }
 
-        // POST: api/Products
+        // POST: api/Product
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            if (_context.Products == null)
+            if (_context.Product == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Products'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Product'  is null.");
             }
             product.AmountC = product.Amount;
-            _context.Products.Add(product);
+            _context.Product.Add(product);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProduct", new { id = product.Id }, product);
         }
 
-        // DELETE: api/Products/5
+        // DELETE: api/Product/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
-            if (_context.Products == null)
+            if (_context.Product == null)
             {
                 return NotFound();
             }
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Product.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            _context.Products.Remove(product);
+            _context.Product.Remove(product);
             await _context.SaveChangesAsync();
 
             return Ok();
@@ -120,26 +122,28 @@ namespace MiNegocio.Server.Controllers
 
         private bool ProductExists(Guid id)
         {
-            return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Product?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        // PUT: api/Products/input/5
+        // PUT: api/Product/input/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("input/{id}")]
         public async Task<IActionResult> PutInputProduct(Guid id, ProductInput productInput)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Product.FindAsync(id);
 
             if (product == null)
             {
                 return NotFound();
             }
             product.Amount += productInput.Amount;
+            product.AmountC += productInput.Amount;
+            product.Inputs.Add(productInput);
             _context.Entry(product).State = EntityState.Modified;
-
+            
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();                
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -156,12 +160,12 @@ namespace MiNegocio.Server.Controllers
             return Ok();
         }
 
-        // PUT: api/Products/output/5
+        // PUT: api/Product/output/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("output/{id}")]
         public async Task<IActionResult> PutOutputProduct(Guid id, ProductInput productInput)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Product.FindAsync(id);
 
             if (product == null)
             {

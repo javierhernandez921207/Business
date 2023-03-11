@@ -57,7 +57,7 @@ namespace MiNegocio.Server.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Businesss",
+                name: "Business",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
@@ -242,7 +242,7 @@ namespace MiNegocio.Server.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "Product",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
@@ -259,7 +259,7 @@ namespace MiNegocio.Server.Migrations
                     table.ForeignKey(
                         name: "FK_Products_Businesss_BusinessId",
                         column: x => x.BusinessId,
-                        principalTable: "Businesss",
+                        principalTable: "Business",
                         principalColumn: "Id");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
@@ -339,7 +339,7 @@ namespace MiNegocio.Server.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_BusinessId",
-                table: "Products",
+                table: "Product",
                 column: "BusinessId");
         }
 
@@ -371,7 +371,7 @@ namespace MiNegocio.Server.Migrations
                 name: "PersistedGrants");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -380,7 +380,7 @@ namespace MiNegocio.Server.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Businesss");
+                name: "Business");
         }
     }
 }

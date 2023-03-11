@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MiNegocio.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230304175847_initial")]
-    partial class initial
+    [Migration("20230310144956_Add-productintput")]
+    partial class Addproductintput
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

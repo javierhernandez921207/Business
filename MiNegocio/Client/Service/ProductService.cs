@@ -16,6 +16,10 @@ namespace MiNegocio.Client.Service
             _notificationService = notificationService;
         }
 
+        public async Task<Product?> GetProduct(Guid id) {
+            var resul = await _httpClient.GetFromJsonAsync<Product?>($"api/Products/{id}");
+            return resul;
+        }
         public async Task<bool> AddProduct(Product product)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Products", product);

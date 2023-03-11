@@ -14,8 +14,9 @@ namespace MiNegocio.Server.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
-        public DbSet<Business> Businesss { get; set; }
-        public DbSet<Product> Products { get; set; }
+        public DbSet<Business> Business { get; set; }
+        public DbSet<Product> Product { get; set; }
+        public DbSet<ProductInput> ProductInput { get; set; }
 
     }
 }

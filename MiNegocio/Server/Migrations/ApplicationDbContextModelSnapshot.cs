@@ -240,7 +240,7 @@ namespace MiNegocio.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Businesss");
+                    b.ToTable("Business");
                 });
 
             modelBuilder.Entity("MiNegocio.Shared.Models.Product", b =>
@@ -272,7 +272,29 @@ namespace MiNegocio.Server.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Product");
+                });
+
+            modelBuilder.Entity("MiNegocio.Shared.Models.ProductInput", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductInput");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -410,10 +432,21 @@ namespace MiNegocio.Server.Migrations
             modelBuilder.Entity("MiNegocio.Shared.Models.Product", b =>
                 {
                     b.HasOne("MiNegocio.Shared.Models.Business", "Business")
-                        .WithMany("Products")
+                        .WithMany("Product")
                         .HasForeignKey("BusinessId");
 
                     b.Navigation("Business");
+                });
+
+            modelBuilder.Entity("MiNegocio.Shared.Models.ProductInput", b =>
+                {
+                    b.HasOne("MiNegocio.Shared.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -469,7 +502,7 @@ namespace MiNegocio.Server.Migrations
 
             modelBuilder.Entity("MiNegocio.Shared.Models.Business", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

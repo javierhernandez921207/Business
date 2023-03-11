@@ -29,11 +29,11 @@ namespace MiNegocio.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Business>>> GetBusinesss()
         {
-          if (_context.Businesss == null)
+          if (_context.Business == null)
           {
               return NotFound();
           }
-            return await _context.Businesss
+            return await _context.Business
                 .Include(b => b.Products)
                 .ToListAsync();
         }
@@ -42,11 +42,11 @@ namespace MiNegocio.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Business>> GetBusiness(Guid id)
         {
-          if (_context.Businesss == null)
+          if (_context.Business == null)
           {
               return NotFound();
           }
-            var business = await _context.Businesss
+            var business = await _context.Business
                 .Include(b => b.Products)
                 .FirstOrDefaultAsync(b => b.Id == id);
            
@@ -94,12 +94,12 @@ namespace MiNegocio.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Business>> PostBusiness(Business business)
         {
-          if (_context.Businesss == null)
+          if (_context.Business == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.Businesss'  is null.");
+              return Problem("Entity set 'ApplicationDbContext.Business'  is null.");
           }
             business.Products = new List<Product>();
-            _context.Businesss.Add(business);
+            _context.Business.Add(business);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBusiness", new { id = business.Id }, business);
@@ -109,17 +109,17 @@ namespace MiNegocio.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusiness(Guid id)
         {
-            if (_context.Businesss == null)
+            if (_context.Business == null)
             {
                 return NotFound();
             }
-            var business = await _context.Businesss.FindAsync(id);
+            var business = await _context.Business.FindAsync(id);
             if (business == null)
             {
                 return NotFound();
             }
 
-            _context.Businesss.Remove(business);
+            _context.Business.Remove(business);
             await _context.SaveChangesAsync();
 
             return Ok();
@@ -127,7 +127,7 @@ namespace MiNegocio.Server.Controllers
 
         private bool BusinessExists(Guid id)
         {
-            return (_context.Businesss?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Business?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MiNegocio.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230304175847_initial")]
-    partial class initial
+    [Migration("20230310183726_product-intput")]
+    partial class productintput
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -278,6 +278,28 @@ namespace MiNegocio.Server.Migrations
                     b.ToTable("Product");
                 });
 
+            modelBuilder.Entity("MiNegocio.Shared.Models.ProductInput", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductInput");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -417,6 +439,17 @@ namespace MiNegocio.Server.Migrations
                         .HasForeignKey("BusinessId");
 
                     b.Navigation("Business");
+                });
+
+            modelBuilder.Entity("MiNegocio.Shared.Models.ProductInput", b =>
+                {
+                    b.HasOne("MiNegocio.Shared.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
